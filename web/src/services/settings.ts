@@ -1,4 +1,4 @@
-import type { LanguageCode } from '../types.ts'
+import type { LanguageCode, SubjectId } from '../types.ts'
 
 const STORAGE_KEY = 'freequiz-settings'
 
@@ -11,6 +11,7 @@ export type MicrophonePreference = 'off' | 'on'
 
 export interface Settings {
   contentLang: LanguageCode
+  subject: SubjectId
   theme: ThemePreference
   labelSize: FontSizePreference
   contentSize: FontSizePreference
@@ -23,6 +24,7 @@ export interface Settings {
 
 const defaults: Settings = {
   contentLang: 'en',
+  subject: 'programming',
   theme: 'dark',
   labelSize: 'medium',
   contentSize: 'medium',

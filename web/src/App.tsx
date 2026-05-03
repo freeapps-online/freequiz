@@ -4,7 +4,8 @@ import { useApplySettings, useSettings } from './hooks.ts'
 import { PracticeTab } from './components/PracticeTab.tsx'
 import { PreferencesTab } from './components/PreferencesTab.tsx'
 import { LanguagePicker } from './components/LanguagePicker.tsx'
-import { LEVELS, getLevelLabel } from './services/problems.ts'
+import { SubjectPicker } from './components/SubjectPicker.tsx'
+import { clampLevel, getLevelLabel, getSubjectLevels } from './services/quizCatalog.ts'
 import { getStrings } from './services/i18n.ts'
 import type { Mode } from './types.ts'
 
@@ -30,6 +31,8 @@ export default function App() {
   const { settings, update } = useSettings()
   const strings = getStrings(settings.contentLang)
   useApplySettings(settings)
+  const levels = getSubjectLevels(settings.subject)
+  const safeLevel = clampLevel(settings.subject, settings.level)
 
   const [levelOpen, setLevelOpen] = useState(false)
   const [showStats, setShowStats] = useState(false)
@@ -38,13 +41,17 @@ export default function App() {
     setMode(nextMode)
     setShowStats(false)
     window.history.pushState(null, '', MODE_TO_PATH[nextMode])
-  }, [])
+  }, [setShowStats])
 
   useEffect(() => {
     const onPop = () => setMode(getModeFromPath())
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
   }, [])
+
+  useEffect(() => {
+    if (safeLevel !== settings.level) update({ level: safeLevel })
+  }, [safeLevel, settings.level, update])
 
   const isFullscreen = mode === 'practice'
 
@@ -105,13 +112,22 @@ export default function App() {
             </nav>
 
             <div className="space-y-1">
+              <div className="px-1 text-[0.65rem] font-bold uppercase tracking-[0.15em] text-[var(--muted)]">{strings.subject}</div>
+              <SubjectPicker
+                language={settings.contentLang}
+                value={settings.subject}
+                onChange={(subject) => update({ subject, level: clampLevel(subject, settings.level) })}
+              />
+            </div>
+
+            <div className="space-y-1">
               <div className="px-1 text-[0.65rem] font-bold uppercase tracking-[0.15em] text-[var(--muted)]">{strings.level}</div>
               <div className="max-h-64 space-y-0.5 overflow-y-auto">
-                {LEVELS.map((level) => (
+                {levels.map((level) => (
                   <button
                     key={level}
                     className={`flex w-full items-center gap-2 rounded-[0.75rem] px-3 py-2 text-left text-sm ${
-                      level === settings.level
+                      level === safeLevel
                         ? 'bg-[var(--accent-gradient)] font-semibold text-[var(--ink)]'
                         : 'text-[var(--muted)] hover:bg-[var(--glass-hover)] hover:text-[var(--ink)]'
                     }`}
@@ -119,7 +135,7 @@ export default function App() {
                     type="button"
                   >
                     <span className="font-bold">{level}</span>
-                    <span>{getLevelLabel(level, settings.contentLang)}</span>
+                    <span>{getLevelLabel(settings.subject, level, settings.contentLang)}</span>
                   </button>
                 ))}
               </div>
@@ -146,60 +162,69 @@ export default function App() {
             )}
           </aside>
 
-          <header className="mb-1 flex items-center gap-2 lg:hidden">
-            <LanguagePicker
+          <header className="mb-2 space-y-2 lg:hidden">
+            <SubjectPicker
               compact
-              label={strings.language}
-              value={settings.contentLang}
-              onChange={(code) => update({ contentLang: code })}
+              language={settings.contentLang}
+              value={settings.subject}
+              onChange={(subject) => update({ subject, level: clampLevel(subject, settings.level) })}
             />
 
-            <div className="relative">
-              <button
-                className="flex items-center gap-1 rounded-full border border-[var(--line)] bg-[var(--glass)] px-2 py-1.5 text-xs font-semibold text-[var(--muted)]"
-                onClick={() => setLevelOpen(!levelOpen)}
-                type="button"
-              >
-                {strings.level} {settings.level} · {getLevelLabel(settings.level, settings.contentLang)}
-                <ChevronDown className={`h-3 w-3 transition-transform ${levelOpen ? 'rotate-180' : ''}`} strokeWidth={2.2} />
-              </button>
-              {levelOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setLevelOpen(false)} />
-                  <div className="absolute left-0 top-full z-50 mt-1 max-h-72 w-56 overflow-y-auto rounded-[1rem] border border-[var(--line-strong)] bg-[var(--panel-strong)] p-1 shadow-[var(--shadow-soft)] backdrop-blur-xl">
-                    {LEVELS.map((level) => (
-                      <button
-                        key={level}
-                        className={`flex w-full items-center gap-2 rounded-[0.75rem] px-3 py-2 text-left text-sm ${
-                          level === settings.level
-                            ? 'bg-[var(--accent-gradient)] font-semibold text-[var(--ink)]'
-                            : 'text-[var(--muted)] hover:bg-[var(--glass-hover)] hover:text-[var(--ink)]'
-                        }`}
-                        onClick={() => {
-                          update({ level })
-                          setLevelOpen(false)
-                        }}
-                        type="button"
-                      >
-                        <span className="font-bold">{level}</span>
-                        <span>{getLevelLabel(level, settings.contentLang)}</span>
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
+            <div className="flex items-center gap-2">
+              <LanguagePicker
+                compact
+                label={strings.language}
+                value={settings.contentLang}
+                onChange={(code) => update({ contentLang: code })}
+              />
 
-            <div className="ml-auto flex items-center gap-2">
-              {mode === 'practice' && (
+              <div className="relative">
                 <button
-                  className={`rounded-full px-2 py-1.5 text-xs font-semibold ${showStats ? 'bg-[var(--sky)] text-[var(--paper)]' : 'text-[var(--muted)]'}`}
-                  onClick={() => setShowStats(!showStats)}
+                  className="flex items-center gap-1 rounded-full border border-[var(--line)] bg-[var(--glass)] px-2 py-1.5 text-xs font-semibold text-[var(--muted)]"
+                  onClick={() => setLevelOpen(!levelOpen)}
                   type="button"
                 >
-                  {showStats ? strings.play : strings.stats}
+                  {strings.level} {safeLevel} · {getLevelLabel(settings.subject, safeLevel, settings.contentLang)}
+                  <ChevronDown className={`h-3 w-3 transition-transform ${levelOpen ? 'rotate-180' : ''}`} strokeWidth={2.2} />
                 </button>
-              )}
+                {levelOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setLevelOpen(false)} />
+                    <div className="absolute left-0 top-full z-50 mt-1 max-h-72 w-56 overflow-y-auto rounded-[1rem] border border-[var(--line-strong)] bg-[var(--panel-strong)] p-1 shadow-[var(--shadow-soft)] backdrop-blur-xl">
+                      {levels.map((level) => (
+                        <button
+                          key={level}
+                          className={`flex w-full items-center gap-2 rounded-[0.75rem] px-3 py-2 text-left text-sm ${
+                            level === safeLevel
+                              ? 'bg-[var(--accent-gradient)] font-semibold text-[var(--ink)]'
+                              : 'text-[var(--muted)] hover:bg-[var(--glass-hover)] hover:text-[var(--ink)]'
+                          }`}
+                          onClick={() => {
+                            update({ level })
+                            setLevelOpen(false)
+                          }}
+                          type="button"
+                        >
+                          <span className="font-bold">{level}</span>
+                          <span>{getLevelLabel(settings.subject, level, settings.contentLang)}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className="ml-auto flex items-center gap-2">
+                {mode === 'practice' && (
+                  <button
+                    className={`rounded-full px-2 py-1.5 text-xs font-semibold ${showStats ? 'bg-[var(--sky)] text-[var(--paper)]' : 'text-[var(--muted)]'}`}
+                    onClick={() => setShowStats(!showStats)}
+                    type="button"
+                  >
+                    {showStats ? strings.play : strings.stats}
+                  </button>
+                )}
+              </div>
             </div>
           </header>
 
@@ -208,8 +233,9 @@ export default function App() {
               <div className={`${isFullscreen ? 'flex min-h-0 flex-1 flex-col' : 'min-h-[34rem] sm:min-h-[36rem] lg:min-h-0'}`}>
                 {mode === 'practice' && (
                   <PracticeTab
+                    subject={settings.subject}
                     language={settings.contentLang}
-                    level={settings.level}
+                    level={safeLevel}
                     showStats={showStats}
                     audio={settings.audio}
                     microphone={settings.microphone}

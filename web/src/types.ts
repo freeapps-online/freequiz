@@ -1,4 +1,5 @@
 export type Mode = 'practice' | 'preferences'
+export type SubjectId = 'reading' | 'programming'
 export type LanguageCode =
   | 'en'
   | 'es'
@@ -22,17 +23,7 @@ export interface Language {
   name: string
 }
 
-export type QuestionSkill =
-  | 'main-idea'
-  | 'details'
-  | 'sequence'
-  | 'inference'
-  | 'conclusion'
-  | 'feelings'
-  | 'riddle'
-  | 'pattern'
-  | 'logic'
-  | 'challenge'
+export type QuestionSkill = string
 export type CardIllustration =
   | 'story'
   | 'detail'
@@ -44,6 +35,10 @@ export type CardIllustration =
   | 'pattern'
   | 'logic'
   | 'challenge'
+  | 'code'
+  | 'concept'
+
+export type CardContentFormat = 'text' | 'code'
 
 export interface ComprehensionCard {
   id: string
@@ -52,9 +47,14 @@ export interface ComprehensionCard {
   categoryLabel: string
   illustration: CardIllustration
   passage: string
+  passageFormat?: CardContentFormat
   question: string
   correctAnswer: string
   wrongAnswer: string
+  spokenPassage?: string
+  spokenQuestion?: string
+  spokenCorrectAnswer?: string
+  spokenWrongAnswer?: string
 }
 
 export interface QuestionRound {

@@ -317,6 +317,31 @@ function renderKindFallback(kind: IllustrationKind) {
     )
   }
 
+  if (kind === 'code') {
+    return (
+      <>
+        <rect x="42" y="30" width="236" height="90" rx="16" fill="var(--paper-deep)" stroke="var(--line-strong)" />
+        <circle cx="64" cy="48" r="4" fill="var(--error)" />
+        <circle cx="80" cy="48" r="4" fill="var(--warning)" />
+        <circle cx="96" cy="48" r="4" fill="var(--mint)" />
+        <path d="M76 74h92M76 90h134M76 106h86" stroke="var(--sky)" strokeWidth="6" strokeLinecap="round" opacity="0.8" />
+        <path d="M210 72l-14 16 14 16M234 72l14 16-14 16" fill="none" stroke="var(--accent)" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+      </>
+    )
+  }
+
+  if (kind === 'concept') {
+    return (
+      <>
+        <rect x="54" y="42" width="62" height="62" rx="16" fill="var(--sky-soft)" opacity="0.75" />
+        <rect x="130" y="28" width="138" height="28" rx="14" fill="var(--paper)" stroke="var(--line-strong)" />
+        <rect x="130" y="64" width="138" height="16" rx="8" fill="var(--accent-soft)" opacity="0.8" />
+        <rect x="130" y="88" width="102" height="16" rx="8" fill="var(--mint-soft)" opacity="0.8" />
+        <path d="M72 74h26l10 10 20-26" fill="none" stroke="var(--mint)" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+      </>
+    )
+  }
+
   return (
     <>
       <Robot />

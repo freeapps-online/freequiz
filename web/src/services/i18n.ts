@@ -48,6 +48,7 @@ export interface UiStrings {
   backToPractice: string
   level: string
   language: string
+  subject: string
   keyboard: string
   pickLeftAnswer: string
   pickRightAnswer: string
@@ -114,6 +115,7 @@ const STRINGS: Partial<Record<LanguageCode, UiStrings>> = {
     backToPractice: 'Back to Practice',
     level: 'Level',
     language: 'Language',
+    subject: 'Subject',
     keyboard: 'Keyboard',
     pickLeftAnswer: 'Pick left answer',
     pickRightAnswer: 'Pick right answer',
@@ -178,6 +180,7 @@ const STRINGS: Partial<Record<LanguageCode, UiStrings>> = {
     backToPractice: 'Volver',
     level: 'Nivel',
     language: 'Idioma',
+    subject: 'Categoria',
     keyboard: 'Teclado',
     pickLeftAnswer: 'Elige la respuesta izquierda',
     pickRightAnswer: 'Elige la respuesta derecha',
@@ -242,6 +245,7 @@ const STRINGS: Partial<Record<LanguageCode, UiStrings>> = {
     backToPractice: 'Retour',
     level: 'Niveau',
     language: 'Langue',
+    subject: 'Sujet',
     keyboard: 'Clavier',
     pickLeftAnswer: 'Choisir la reponse de gauche',
     pickRightAnswer: 'Choisir la reponse de droite',
@@ -306,6 +310,7 @@ const STRINGS: Partial<Record<LanguageCode, UiStrings>> = {
     backToPractice: 'Zuruck',
     level: 'Stufe',
     language: 'Sprache',
+    subject: 'Fach',
     keyboard: 'Tastatur',
     pickLeftAnswer: 'Linke Antwort wahlen',
     pickRightAnswer: 'Rechte Antwort wahlen',
@@ -370,6 +375,7 @@ const STRINGS: Partial<Record<LanguageCode, UiStrings>> = {
     backToPractice: 'Voltar',
     level: 'Nivel',
     language: 'Idioma',
+    subject: 'Tema',
     keyboard: 'Teclado',
     pickLeftAnswer: 'Escolha a resposta da esquerda',
     pickRightAnswer: 'Escolha a resposta da direita',
@@ -434,6 +440,7 @@ const STRINGS: Partial<Record<LanguageCode, UiStrings>> = {
     backToPractice: 'वापस',
     level: 'स्तर',
     language: 'भाषा',
+    subject: 'विषय',
     keyboard: 'कीबोर्ड',
     pickLeftAnswer: 'बायां उत्तर चुनें',
     pickRightAnswer: 'दायां उत्तर चुनें',

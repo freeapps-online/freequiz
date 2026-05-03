@@ -1,21 +1,48 @@
-import type { Score } from '../types.ts'
+import type { Score, SubjectId } from '../types.ts'
 
 const SCORES_KEY = 'freequiz-scores'
 const PROBLEM_STATS_KEY = 'freequiz-card-stats'
 
-export function loadScores(): Score {
-  try {
-    const raw = localStorage.getItem(SCORES_KEY)
-    if (raw) return JSON.parse(raw)
-  } catch { /* ignore */ }
+type ScoresBySubject = Partial<Record<SubjectId, Score>>
+
+function isScore(value: unknown): value is Score {
+  return typeof value === 'object'
+    && value !== null
+    && 'correct' in value
+    && 'total' in value
+    && 'streak' in value
+    && 'bestStreak' in value
+}
+
+function defaultScore(): Score {
   return { correct: 0, total: 0, streak: 0, bestStreak: 0 }
 }
 
-function saveScores(scores: Score) {
-  localStorage.setItem(SCORES_KEY, JSON.stringify(scores))
+function loadScoresMap(): ScoresBySubject {
+  try {
+    const raw = localStorage.getItem(SCORES_KEY)
+    if (!raw) return {}
+
+    const parsed = JSON.parse(raw) as unknown
+    if (isScore(parsed)) {
+      return { reading: parsed }
+    }
+
+    return typeof parsed === 'object' && parsed !== null ? parsed as ScoresBySubject : {}
+  } catch { /* ignore */ }
+  return {}
 }
 
-export function recordAnswer(scores: Score, correct: boolean): Score {
+export function loadScores(subject: SubjectId): Score {
+  return loadScoresMap()[subject] ?? defaultScore()
+}
+
+function saveScores(subject: SubjectId, scores: Score) {
+  const next = { ...loadScoresMap(), [subject]: scores }
+  localStorage.setItem(SCORES_KEY, JSON.stringify(next))
+}
+
+export function recordAnswer(subject: SubjectId, scores: Score, correct: boolean): Score {
   const streak = correct ? scores.streak + 1 : 0
   const bestStreak = Math.max(scores.bestStreak, streak)
   const next = {
@@ -24,7 +51,7 @@ export function recordAnswer(scores: Score, correct: boolean): Score {
     streak,
     bestStreak,
   }
-  saveScores(next)
+  saveScores(subject, next)
   return next
 }
 
@@ -38,19 +65,43 @@ export interface ProblemStat {
 
 export type ProblemStatsMap = Record<string, ProblemStat>
 
-export function loadProblemStats(): ProblemStatsMap {
+type ProblemStatsBySubject = Partial<Record<SubjectId, ProblemStatsMap>>
+
+function isProblemStatsMap(value: unknown): value is ProblemStatsMap {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false
+  return Object.values(value).every((entry) => typeof entry === 'object' && entry !== null && 'lastSeen' in entry)
+}
+
+function loadProblemStatsMap(): ProblemStatsBySubject {
   try {
     const raw = localStorage.getItem(PROBLEM_STATS_KEY)
-    if (raw) return JSON.parse(raw)
+    if (!raw) return {}
+
+    const parsed = JSON.parse(raw) as unknown
+    if (isProblemStatsMap(parsed)) {
+      return { reading: parsed }
+    }
+
+    return typeof parsed === 'object' && parsed !== null ? parsed as ProblemStatsBySubject : {}
   } catch { /* ignore */ }
   return {}
 }
 
-function saveProblemStats(stats: ProblemStatsMap) {
-  localStorage.setItem(PROBLEM_STATS_KEY, JSON.stringify(stats))
+export function loadProblemStats(subject: SubjectId): ProblemStatsMap {
+  return loadProblemStatsMap()[subject] ?? {}
 }
 
-export function recordProblemAnswer(stats: ProblemStatsMap, key: string, correct: boolean): ProblemStatsMap {
+function saveProblemStats(subject: SubjectId, stats: ProblemStatsMap) {
+  const next = { ...loadProblemStatsMap(), [subject]: stats }
+  localStorage.setItem(PROBLEM_STATS_KEY, JSON.stringify(next))
+}
+
+export function recordProblemAnswer(
+  subject: SubjectId,
+  stats: ProblemStatsMap,
+  key: string,
+  correct: boolean,
+): ProblemStatsMap {
   const prev = stats[key] ?? { correct: 0, wrong: 0, lastSeen: 0 }
   const next = {
     ...stats,
@@ -60,7 +111,7 @@ export function recordProblemAnswer(stats: ProblemStatsMap, key: string, correct
       lastSeen: Date.now(),
     },
   }
-  saveProblemStats(next)
+  saveProblemStats(subject, next)
   return next
 }
 

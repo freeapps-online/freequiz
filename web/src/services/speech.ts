@@ -70,7 +70,16 @@ const SPOKEN_SIDE_PATTERNS: Partial<Record<LanguageCode, { left: RegExp; right: 
 
 export function roundToSpeech(round: QuestionRound, language: LanguageCode): string {
   const strings = getStrings(language)
-  return `${round.card.passage} ${round.card.question} ${strings.optionA}: ${round.leftOption}. ${strings.optionB}: ${round.rightOption}.`
+  const passage = round.card.spokenPassage ?? round.card.passage
+  const question = round.card.spokenQuestion ?? round.card.question
+  const leftOption = round.correctSide === 'left'
+    ? (round.card.spokenCorrectAnswer ?? round.leftOption)
+    : (round.card.spokenWrongAnswer ?? round.leftOption)
+  const rightOption = round.correctSide === 'right'
+    ? (round.card.spokenCorrectAnswer ?? round.rightOption)
+    : (round.card.spokenWrongAnswer ?? round.rightOption)
+
+  return `${passage} ${question} ${strings.optionA}: ${leftOption}. ${strings.optionB}: ${rightOption}.`
 }
 
 export function spokenTextToSide(text: string, language: LanguageCode): 'left' | 'right' | null {

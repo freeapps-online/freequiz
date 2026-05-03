@@ -1,14 +1,15 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { generateRound, getCardLabel } from '../services/problems.ts'
+import { generateRound, getCardLabel } from '../services/quizCatalog.ts'
 import { loadScores, recordAnswer, loadProblemStats, recordProblemAnswer } from '../services/scores.ts'
 import { SPEECH_LOCALES, getStrings } from '../services/i18n.ts'
 import { speakRound, spokenTextToSide, stopSpeaking } from '../services/speech.ts'
-import type { QuestionRound, Score, LanguageCode } from '../types.ts'
+import type { QuestionRound, Score, LanguageCode, SubjectId } from '../types.ts'
 import type { ProblemStatsMap } from '../services/scores.ts'
 import type { AudioPreference, MicrophonePreference } from '../services/settings.ts'
-import { CardIllustration } from './CardIllustration.tsx'
+import { SwipeQuizCard } from './SwipeQuizCard.tsx'
 
 interface Props {
+  subject: SubjectId
   language: LanguageCode
   level: number
   showStats: boolean
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export function PracticeTab({
+  subject,
   language,
   level,
   showStats,
@@ -29,8 +31,8 @@ export function PracticeTab({
 }: Props) {
   const strings = getStrings(language)
   const [round, setRound] = useState<QuestionRound | null>(null)
-  const [scores, setScores] = useState<Score>(loadScores)
-  const [problemStats, setProblemStats] = useState<ProblemStatsMap>(loadProblemStats)
+  const [scores, setScores] = useState<Score>(() => loadScores(subject))
+  const [problemStats, setProblemStats] = useState<ProblemStatsMap>(() => loadProblemStats(subject))
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null)
   const [voiceStatus, setVoiceStatus] = useState<'off' | 'starting' | 'prompting' | 'listening' | 'unsupported' | 'denied'>('off')
   const [heardText, setHeardText] = useState('')
@@ -48,13 +50,21 @@ export function PracticeTab({
     problemStatsRef.current = problemStats
   }, [problemStats])
 
+  useEffect(() => {
+    const nextScores = loadScores(subject)
+    const nextProblemStats = loadProblemStats(subject)
+    setScores(nextScores)
+    setProblemStats(nextProblemStats)
+    problemStatsRef.current = nextProblemStats
+  }, [subject])
+
   const nextRound = useCallback(() => {
-    setRound((prev) => generateRound(level, language, problemStatsRef.current, prev?.card.id))
+    setRound((prev) => generateRound(subject, level, language, problemStatsRef.current, prev?.card.id))
     setFeedback(null)
     setDragX(0)
     setHeardText('')
     setCardReady(microphone !== 'on')
-  }, [language, level, microphone])
+  }, [language, level, microphone, subject])
 
   useEffect(() => {
     nextRound()
@@ -74,16 +84,16 @@ export function PracticeTab({
 
     const correct = side === round.correctSide
     setFeedback(correct ? 'correct' : 'wrong')
-    setScores((prev) => recordAnswer(prev, correct))
+    setScores((prev) => recordAnswer(subject, prev, correct))
     setProblemStats((prev) => {
-      const next = recordProblemAnswer(prev, round.card.id, correct)
+      const next = recordProblemAnswer(subject, prev, round.card.id, correct)
       problemStatsRef.current = next
       return next
     })
 
     clearTimeout(feedbackTimer.current)
     feedbackTimer.current = setTimeout(nextRound, correct ? 700 : 1400)
-  }, [feedback, nextRound, round])
+  }, [feedback, nextRound, round, subject])
 
   const submitSpokenAnswer = useCallback((spokenSide: 'left' | 'right') => {
     if (!round || feedback) return false
@@ -247,7 +257,7 @@ export function PracticeTab({
     else setDragX(0)
   }, [dragX, handleAnswer])
 
-  if (showStats) return <StatsView scores={scores} problemStats={problemStats} language={language} />
+  if (showStats) return <StatsView scores={scores} problemStats={problemStats} language={language} subject={subject} />
   if (!round) return null
 
   const pct = scores.total > 0 ? Math.round((scores.correct / scores.total) * 100) : 0
@@ -268,7 +278,7 @@ export function PracticeTab({
   const correctAnswer = round.correctSide === 'left' ? round.leftOption : round.rightOption
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-6">
+    <div className="flex flex-1 flex-col items-center justify-center gap-6 pb-24 lg:pb-0">
       <div className="flex w-full max-w-md items-center justify-between px-2 text-sm">
         <div className="flex items-center gap-3">
           <span className="font-bold text-[var(--ink)]">{scores.correct}/{scores.total}</span>
@@ -328,79 +338,16 @@ export function PracticeTab({
 
         {cardReady ? (
           <>
-            <div
-              className="relative select-none"
+            <SwipeQuizCard
+              round={round}
+              level={level}
+              dragX={dragX}
+              feedback={feedback}
+              strings={strings}
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
-              style={{ touchAction: 'none' }}
-            >
-              <div
-                className={`rounded-[2rem] border px-5 py-5 transition-colors duration-200 sm:px-6 sm:py-6 ${
-                  feedback === 'correct'
-                    ? 'border-[var(--success)] bg-[var(--mint-soft)]'
-                    : feedback === 'wrong'
-                      ? 'border-[var(--error)] bg-[var(--error)]/10'
-                      : 'border-[var(--line-strong)] bg-[var(--card-gradient)]'
-                } shadow-[var(--shadow-card)]`}
-                style={{
-                  minHeight: '22rem',
-                  transform: feedback ? undefined : `translateX(${dragX}px) rotate(${dragX * 0.05}deg)`,
-                }}
-              >
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="rounded-full border border-[var(--line)] bg-[var(--glass)] px-3 py-1 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
-                      {round.card.categoryLabel}
-                    </span>
-                    <span className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
-                      {strings.level} {level}
-                    </span>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="display-font text-[1.35rem] font-bold text-[var(--ink)] sm:text-[1.55rem]">
-                      {round.card.title}
-                    </div>
-                    <CardIllustration kind={round.card.illustration} cardId={round.card.id} />
-                  </div>
-
-                  <div
-                    className="text-[var(--ink)]"
-                    style={{ fontSize: 'calc(1.02rem * var(--content-scale))', lineHeight: 1.6 }}
-                  >
-                    {round.card.passage}
-                  </div>
-
-                  <div className="rounded-[1.2rem] bg-[var(--glass)] px-4 py-3">
-                    <div className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">{strings.question}</div>
-                    <div
-                      className="mt-2 display-font font-bold text-[var(--ink)]"
-                      style={{ fontSize: 'calc(1.25rem * var(--content-scale))', lineHeight: 1.15 }}
-                    >
-                      {round.card.question}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-3 text-center text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-                {strings.readPrompt}
-              </div>
-
-              {!feedback && Math.abs(dragX) > 20 && (
-                <div className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-2xl font-bold ${
-                  dragX < 0 ? 'left-[-3rem]' : 'right-[-3rem]'
-                }`}>
-                  <span className={dragX < 0
-                    ? (round.correctSide === 'left' ? 'text-[var(--success)]' : 'text-[var(--error)]')
-                    : (round.correctSide === 'right' ? 'text-[var(--success)]' : 'text-[var(--error)]')
-                  }>
-                    {dragX < 0 ? 'A' : 'B'}
-                  </span>
-                </div>
-              )}
-            </div>
+            />
 
             <div className="mt-6 flex gap-4">
               <AnswerButton
@@ -444,10 +391,12 @@ function StatsView({
   scores,
   problemStats,
   language,
+  subject,
 }: {
   scores: Score
   problemStats: ProblemStatsMap
   language: LanguageCode
+  subject: SubjectId
 }) {
   const strings = getStrings(language)
   const entries = Object.entries(problemStats)
@@ -479,7 +428,7 @@ function StatsView({
               .slice(0, 20)
               .map(([key, stat]) => (
                 <div key={key} className="flex items-center justify-between gap-3 rounded-lg px-2 py-1 text-sm">
-                  <span className="text-[var(--ink)]">{getCardLabel(key, language)}</span>
+                  <span className="text-[var(--ink)]">{getCardLabel(subject, key, language)}</span>
                   <span className={stat.wrong > stat.correct ? 'text-[var(--error)]' : 'text-[var(--success)]'}>
                     {stat.correct}/{stat.correct + stat.wrong}
                   </span>
