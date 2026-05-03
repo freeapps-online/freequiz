@@ -1,0 +1,8 @@
+{
+  "name": "FreeQuizApp",
+  "short_name": "FreeQuiz",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#d86f4d"
+}

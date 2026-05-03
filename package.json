@@ -1,0 +1,16 @@
+{
+  "name": "freequizapp",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.30.3",
+  "scripts": {
+    "dev": "pnpm --filter @freequizapp/web dev",
+    "build": "pnpm --filter @freequizapp/web build",
+    "preview": "pnpm --filter @freequizapp/web preview",
+    "cf:deploy": "pnpm build && wrangler pages deploy web/dist",
+    "cf:preview": "pnpm build && wrangler pages deploy web/dist --branch preview"
+  },
+  "devDependencies": {
+    "wrangler": "^4.87.0"
+  }
+}
