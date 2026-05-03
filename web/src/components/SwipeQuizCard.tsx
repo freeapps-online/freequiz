@@ -1,4 +1,3 @@
-import { CardIllustration } from './CardIllustration.tsx'
 import type { UiStrings } from '../services/i18n.ts'
 import type { QuestionRound } from '../types.ts'
 
@@ -47,8 +46,8 @@ export function SwipeQuizCard({
         }}
       >
         <div className="space-y-4">
-          <div className="flex items-center justify-between gap-3">
-            <span className="rounded-full border border-[var(--line)] bg-[var(--glass)] px-3 py-1 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
+          <div className="flex items-center justify-end gap-3 sm:justify-between">
+            <span className="hidden rounded-full border border-[var(--line)] bg-[var(--glass)] px-3 py-1 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[var(--muted)] sm:inline-flex">
               {round.card.categoryLabel}
             </span>
             <span className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
@@ -56,11 +55,8 @@ export function SwipeQuizCard({
             </span>
           </div>
 
-          <div className="space-y-3">
-            <div className="display-font text-[1.35rem] font-bold text-[var(--ink)] sm:text-[1.55rem]">
-              {round.card.title}
-            </div>
-            <CardIllustration kind={round.card.illustration} cardId={round.card.id} />
+          <div className="display-font text-[1.35rem] font-bold text-[var(--ink)] sm:text-[1.55rem]">
+            {round.card.title}
           </div>
 
           {isCode ? (
@@ -88,7 +84,7 @@ export function SwipeQuizCard({
         </div>
       </div>
 
-      <div className="mt-3 text-center text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
+      <div className="mt-3 hidden text-center text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)] sm:block">
         {strings.readPrompt}
       </div>
 
