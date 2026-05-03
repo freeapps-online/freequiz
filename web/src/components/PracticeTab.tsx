@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { generateRound, getCardLabel } from '../services/quizCatalog.ts'
+import { getSubjectLabel } from '../services/quizCatalog.ts'
 import { loadScores, recordAnswer, loadProblemStats, recordProblemAnswer } from '../services/scores.ts'
 import { SPEECH_LOCALES, getStrings } from '../services/i18n.ts'
 import { speakRound, spokenTextToSide, stopSpeaking } from '../services/speech.ts'
@@ -7,6 +7,8 @@ import type { QuestionRound, Score, LanguageCode, SubjectId } from '../types.ts'
 import type { ProblemStatsMap } from '../services/scores.ts'
 import type { AudioPreference, MicrophonePreference } from '../services/settings.ts'
 import { SwipeQuizCard } from './SwipeQuizCard.tsx'
+import { useSubjectDefinition } from '../hooks.ts'
+import type { SubjectDefinition } from '../services/quizCatalog.ts'
 
 interface Props {
   subject: SubjectId
@@ -30,6 +32,7 @@ export function PracticeTab({
   onToggleMicrophone,
 }: Props) {
   const strings = getStrings(language)
+  const subjectDefinition = useSubjectDefinition(subject)
   const [round, setRound] = useState<QuestionRound | null>(null)
   const [scores, setScores] = useState<Score>(() => loadScores(subject))
   const [problemStats, setProblemStats] = useState<ProblemStatsMap>(() => loadProblemStats(subject))
@@ -56,15 +59,24 @@ export function PracticeTab({
     setScores(nextScores)
     setProblemStats(nextProblemStats)
     problemStatsRef.current = nextProblemStats
+    setRound(null)
+    setFeedback(null)
+    setHeardText('')
+    setDragX(0)
   }, [subject])
 
   const nextRound = useCallback(() => {
-    setRound((prev) => generateRound(subject, level, language, problemStatsRef.current, prev?.card.id))
+    if (!subjectDefinition) {
+      setRound(null)
+      return
+    }
+
+    setRound((prev) => subjectDefinition.generateRound(level, language, problemStatsRef.current, prev?.card.id))
     setFeedback(null)
     setDragX(0)
     setHeardText('')
     setCardReady(microphone !== 'on')
-  }, [language, level, microphone, subject])
+  }, [language, level, microphone, subjectDefinition])
 
   useEffect(() => {
     nextRound()
@@ -257,7 +269,22 @@ export function PracticeTab({
     else setDragX(0)
   }, [dragX, handleAnswer])
 
-  if (showStats) return <StatsView scores={scores} problemStats={problemStats} language={language} subject={subject} />
+  if (!subjectDefinition) {
+    return (
+      <div className="flex flex-1 items-center justify-center px-4 pb-24 lg:pb-0">
+        <div className="w-full max-w-md rounded-[2rem] border border-dashed border-[var(--line-strong)] bg-[var(--glass-soft)] px-6 py-12 text-center shadow-[var(--shadow-card)]">
+          <div className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
+            {getSubjectLabel(subject, language)}
+          </div>
+          <div className="mt-3 display-font text-2xl font-bold text-[var(--ink)]">Loading...</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (showStats) {
+    return <StatsView scores={scores} problemStats={problemStats} language={language} subjectDefinition={subjectDefinition} />
+  }
   if (!round) return null
 
   const pct = scores.total > 0 ? Math.round((scores.correct / scores.total) * 100) : 0
@@ -391,12 +418,12 @@ function StatsView({
   scores,
   problemStats,
   language,
-  subject,
+  subjectDefinition,
 }: {
   scores: Score
   problemStats: ProblemStatsMap
   language: LanguageCode
-  subject: SubjectId
+  subjectDefinition: SubjectDefinition
 }) {
   const strings = getStrings(language)
   const entries = Object.entries(problemStats)
@@ -428,7 +455,7 @@ function StatsView({
               .slice(0, 20)
               .map(([key, stat]) => (
                 <div key={key} className="flex items-center justify-between gap-3 rounded-lg px-2 py-1 text-sm">
-                  <span className="text-[var(--ink)]">{getCardLabel(subject, key, language)}</span>
+                  <span className="text-[var(--ink)]">{subjectDefinition.getCardLabel(key, language)}</span>
                   <span className={stat.wrong > stat.correct ? 'text-[var(--error)]' : 'text-[var(--success)]'}>
                     {stat.correct}/{stat.correct + stat.wrong}
                   </span>

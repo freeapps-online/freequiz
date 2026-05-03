@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { loadSettings, saveSettings, type Settings } from './services/settings.ts'
+import { getCachedSubjectDefinition, loadSubjectDefinition, type SubjectDefinition } from './services/quizCatalog.ts'
+import type { SubjectId } from './types.ts'
 
 export function useSettings() {
   const [settings, setSettings] = useState<Settings>(loadSettings)
@@ -43,4 +45,29 @@ export function useApplySettings(settings: Settings) {
     media.addEventListener('change', applyTheme)
     return () => media.removeEventListener('change', applyTheme)
   }, [settings])
+}
+
+export function useSubjectDefinition(subject: SubjectId) {
+  const [definition, setDefinition] = useState<SubjectDefinition | null>(() => getCachedSubjectDefinition(subject))
+
+  useEffect(() => {
+    const cached = getCachedSubjectDefinition(subject)
+    if (cached) {
+      setDefinition(cached)
+      return
+    }
+
+    let cancelled = false
+    setDefinition(null)
+
+    loadSubjectDefinition(subject).then((loaded) => {
+      if (!cancelled) setDefinition(loaded)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [subject])
+
+  return definition
 }

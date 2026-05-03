@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Calculator, ChevronDown, Globe, Settings2 } from 'lucide-react'
-import { useApplySettings, useSettings } from './hooks.ts'
+import { useApplySettings, useSettings, useSubjectDefinition } from './hooks.ts'
 import { PracticeTab } from './components/PracticeTab.tsx'
 import { PreferencesTab } from './components/PreferencesTab.tsx'
 import { LanguagePicker } from './components/LanguagePicker.tsx'
 import { SubjectPicker } from './components/SubjectPicker.tsx'
-import { clampLevel, getLevelLabel, getSubjectLevels } from './services/quizCatalog.ts'
+import { getSubjectLabel } from './services/quizCatalog.ts'
 import { getStrings } from './services/i18n.ts'
 import type { Mode } from './types.ts'
 
@@ -31,8 +31,11 @@ export default function App() {
   const { settings, update } = useSettings()
   const strings = getStrings(settings.contentLang)
   useApplySettings(settings)
-  const levels = getSubjectLevels(settings.subject)
-  const safeLevel = clampLevel(settings.subject, settings.level)
+  const subjectDefinition = useSubjectDefinition(settings.subject)
+  const levels = subjectDefinition?.LEVELS ?? [settings.level]
+  const safeLevel = subjectDefinition
+    ? (subjectDefinition.LEVELS.includes(settings.level) ? settings.level : subjectDefinition.LEVELS[0])
+    : settings.level
 
   const [levelOpen, setLevelOpen] = useState(false)
   const [showStats, setShowStats] = useState(false)
@@ -50,8 +53,12 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    if (safeLevel !== settings.level) update({ level: safeLevel })
-  }, [safeLevel, settings.level, update])
+    if (subjectDefinition && safeLevel !== settings.level) update({ level: safeLevel })
+  }, [safeLevel, settings.level, subjectDefinition, update])
+
+  const levelLabel = subjectDefinition
+    ? subjectDefinition.getLevelLabel(safeLevel, settings.contentLang)
+    : getSubjectLabel(settings.subject, settings.contentLang)
 
   const isFullscreen = mode === 'practice'
 
@@ -116,7 +123,7 @@ export default function App() {
               <SubjectPicker
                 language={settings.contentLang}
                 value={settings.subject}
-                onChange={(subject) => update({ subject, level: clampLevel(subject, settings.level) })}
+                onChange={(subject) => update({ subject })}
               />
             </div>
 
@@ -133,9 +140,10 @@ export default function App() {
                     }`}
                     onClick={() => update({ level })}
                     type="button"
+                    disabled={!subjectDefinition}
                   >
                     <span className="font-bold">{level}</span>
-                    <span>{getLevelLabel(settings.subject, level, settings.contentLang)}</span>
+                    <span>{subjectDefinition ? subjectDefinition.getLevelLabel(level, settings.contentLang) : '...'}</span>
                   </button>
                 ))}
               </div>
@@ -167,7 +175,7 @@ export default function App() {
               compact
               language={settings.contentLang}
               value={settings.subject}
-              onChange={(subject) => update({ subject, level: clampLevel(subject, settings.level) })}
+              onChange={(subject) => update({ subject })}
             />
 
             <div className="flex items-center gap-2">
@@ -184,7 +192,7 @@ export default function App() {
                   onClick={() => setLevelOpen(!levelOpen)}
                   type="button"
                 >
-                  {strings.level} {safeLevel} · {getLevelLabel(settings.subject, safeLevel, settings.contentLang)}
+                  {strings.level} {safeLevel} · {levelLabel}
                   <ChevronDown className={`h-3 w-3 transition-transform ${levelOpen ? 'rotate-180' : ''}`} strokeWidth={2.2} />
                 </button>
                 {levelOpen && (
@@ -204,9 +212,10 @@ export default function App() {
                             setLevelOpen(false)
                           }}
                           type="button"
+                          disabled={!subjectDefinition}
                         >
                           <span className="font-bold">{level}</span>
-                          <span>{getLevelLabel(settings.subject, level, settings.contentLang)}</span>
+                          <span>{subjectDefinition ? subjectDefinition.getLevelLabel(level, settings.contentLang) : '...'}</span>
                         </button>
                       ))}
                     </div>

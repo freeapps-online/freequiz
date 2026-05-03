@@ -1,5 +1,5 @@
 export type Mode = 'practice' | 'preferences'
-export type SubjectId = 'reading' | 'programming'
+export type SubjectId = 'reading' | 'programming' | 'chemistry'
 export type LanguageCode =
   | 'en'
   | 'es'
