@@ -1,0 +1,211 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "FreeAppStore" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - navigation [ref=e5]:
+        - link "Apps" [ref=e6] [cursor=pointer]:
+          - /url: /
+        - link "About" [ref=e7] [cursor=pointer]:
+          - /url: /about.html
+        - link "Contribute" [ref=e8] [cursor=pointer]:
+          - /url: /contribute.html
+        - link "Guidelines" [ref=e9] [cursor=pointer]:
+          - /url: /guidelines.html
+        - link "Pro" [ref=e10] [cursor=pointer]:
+          - /url: https://proappstore.online
+  - main [ref=e11]:
+    - generic [ref=e12]:
+      - heading "Free forever. No exceptions." [level=1] [ref=e13]:
+        - text: Free forever.
+        - text: No exceptions.
+      - paragraph [ref=e14]: Beautiful web apps you can use for free, forever. No charges, no plans, no paywalls, no ads. Ever.
+    - generic [ref=e15]:
+      - strong [ref=e16]: The FreeAppStore Promise
+      - paragraph [ref=e17]: Every app on this platform will remain 100% free. No trial periods. No premium tiers. No "upgrade to unlock." If it's here, it's yours — no strings attached.
+    - generic [ref=e18]:
+      - heading "The apps" [level=2] [ref=e19]
+      - paragraph [ref=e20]: Each app does one thing exceptionally well. Browse by category or explore them all.
+      - generic [ref=e21]:
+        - button "All" [ref=e22] [cursor=pointer]
+        - button "Learning" [ref=e23] [cursor=pointer]
+        - button "Strategy" [ref=e24] [cursor=pointer]
+        - button "Discovery" [ref=e25] [cursor=pointer]
+        - button "Brain Training" [ref=e26] [cursor=pointer]
+        - button "Social" [ref=e27] [cursor=pointer]
+      - generic [ref=e28]:
+        - link "♞ Chess Strategy Play against the engine, analyze positions, and sharpen your tactics with puzzles." [ref=e29] [cursor=pointer]:
+          - /url: /apps/chess.html
+          - generic [ref=e30]:
+            - generic [ref=e31]: ♞
+            - generic [ref=e32]:
+              - heading "Chess" [level=3] [ref=e33]
+              - generic [ref=e34]: Strategy
+          - paragraph [ref=e35]: Play against the engine, analyze positions, and sharpen your tactics with puzzles.
+        - generic [ref=e36]:
+          - link [ref=e37] [cursor=pointer]:
+            - /url: /apps/chess.html
+          - link "Open" [ref=e38] [cursor=pointer]:
+            - /url: https://chess.freeappstore.online
+          - text: About →
+        - link "🇧 Language Learning Flashcards, cloze exercises, and speech practice across multiple languages." [ref=e39] [cursor=pointer]:
+          - /url: /apps/language.html
+          - generic [ref=e40]:
+            - generic [ref=e41]: 🇧
+            - generic [ref=e42]:
+              - heading "Language" [level=3] [ref=e43]
+              - generic [ref=e44]: Learning
+          - paragraph [ref=e45]: Flashcards, cloze exercises, and speech practice across multiple languages.
+        - generic [ref=e46]:
+          - link [ref=e47] [cursor=pointer]:
+            - /url: /apps/language.html
+          - link "Open" [ref=e48] [cursor=pointer]:
+            - /url: https://language.freeappstore.online
+          - text: About →
+        - link "🔢 Math Learning Arithmetic, algebra, and problem-solving with adaptive difficulty and progress tracking." [ref=e49] [cursor=pointer]:
+          - /url: /apps/math.html
+          - generic [ref=e50]:
+            - generic [ref=e51]: 🔢
+            - generic [ref=e52]:
+              - heading "Math" [level=3] [ref=e53]
+              - generic [ref=e54]: Learning
+          - paragraph [ref=e55]: Arithmetic, algebra, and problem-solving with adaptive difficulty and progress tracking.
+        - generic [ref=e56]:
+          - link [ref=e57] [cursor=pointer]:
+            - /url: /apps/math.html
+          - link "Open" [ref=e58] [cursor=pointer]:
+            - /url: https://math.freeappstore.online
+          - text: About →
+        - link "🎵 Music Discovery Explore classical, jazz, and blues. Discover composers, listen to works, build your library." [ref=e59] [cursor=pointer]:
+          - /url: /apps/music.html
+          - generic [ref=e60]:
+            - generic [ref=e61]: 🎵
+            - generic [ref=e62]:
+              - heading "Music" [level=3] [ref=e63]
+              - generic [ref=e64]: Discovery
+          - paragraph [ref=e65]: Explore classical, jazz, and blues. Discover composers, listen to works, build your library.
+        - generic [ref=e66]:
+          - link [ref=e67] [cursor=pointer]:
+            - /url: /apps/music.html
+          - link "Open" [ref=e68] [cursor=pointer]:
+            - /url: https://music.freeappstore.online
+          - text: About →
+        - link "🧩 Puzzle Brain Training Logic puzzles, pattern recognition, and spatial reasoning challenges." [ref=e69] [cursor=pointer]:
+          - /url: /apps/puzzle.html
+          - generic [ref=e70]:
+            - generic [ref=e71]: 🧩
+            - generic [ref=e72]:
+              - heading "Puzzle" [level=3] [ref=e73]
+              - generic [ref=e74]: Brain Training
+          - paragraph [ref=e75]: Logic puzzles, pattern recognition, and spatial reasoning challenges.
+        - generic [ref=e76]:
+          - link [ref=e77] [cursor=pointer]:
+            - /url: /apps/puzzle.html
+          - link "Open" [ref=e78] [cursor=pointer]:
+            - /url: https://puzzle.freeappstore.online
+          - text: About →
+        - link "📚 Quiz Learning Swipe-based quiz cards covering science, programming, chemistry, and more." [ref=e79] [cursor=pointer]:
+          - /url: /apps/quiz.html
+          - generic [ref=e80]:
+            - generic [ref=e81]: 📚
+            - generic [ref=e82]:
+              - heading "Quiz" [level=3] [ref=e83]
+              - generic [ref=e84]: Learning
+          - paragraph [ref=e85]: Swipe-based quiz cards covering science, programming, chemistry, and more.
+        - generic [ref=e86]:
+          - link [ref=e87] [cursor=pointer]:
+            - /url: /apps/quiz.html
+          - link "Open" [ref=e88] [cursor=pointer]:
+            - /url: https://quiz.freeappstore.online
+          - text: About →
+        - link "📖 Books Learning Listen to 130+ classic audiobooks with text-to-speech. Read or listen — your progress saves automatically." [ref=e89] [cursor=pointer]:
+          - /url: /apps/books.html
+          - generic [ref=e90]:
+            - generic [ref=e91]: 📖
+            - generic [ref=e92]:
+              - heading "Books" [level=3] [ref=e93]
+              - generic [ref=e94]: Learning
+          - paragraph [ref=e95]: Listen to 130+ classic audiobooks with text-to-speech. Read or listen — your progress saves automatically.
+        - generic [ref=e96]:
+          - link [ref=e97] [cursor=pointer]:
+            - /url: /apps/books.html
+          - link "Open" [ref=e98] [cursor=pointer]:
+            - /url: https://books.freeappstore.online
+          - text: About →
+        - link "🌱 Life Learning Track life goals, visualize your time, and stay on course with a personalized life expectancy dashboard." [ref=e99] [cursor=pointer]:
+          - /url: /apps/life.html
+          - generic [ref=e100]:
+            - generic [ref=e101]: 🌱
+            - generic [ref=e102]:
+              - heading "Life" [level=3] [ref=e103]
+              - generic [ref=e104]: Learning
+          - paragraph [ref=e105]: Track life goals, visualize your time, and stay on course with a personalized life expectancy dashboard.
+        - generic [ref=e106]:
+          - link [ref=e107] [cursor=pointer]:
+            - /url: /apps/life.html
+          - link "Open" [ref=e108] [cursor=pointer]:
+            - /url: https://life.freeappstore.online
+          - text: About →
+        - link "💬 Messenger Social Private peer-to-peer messaging. WebRTC-powered, end-to-end encrypted, messages stay on your devices." [ref=e109] [cursor=pointer]:
+          - /url: /apps/messenger.html
+          - generic [ref=e110]:
+            - generic [ref=e111]: 💬
+            - generic [ref=e112]:
+              - heading "Messenger" [level=3] [ref=e113]
+              - generic [ref=e114]: Social
+          - paragraph [ref=e115]: Private peer-to-peer messaging. WebRTC-powered, end-to-end encrypted, messages stay on your devices.
+        - generic [ref=e116]:
+          - link [ref=e117] [cursor=pointer]:
+            - /url: /apps/messenger.html
+          - link "Open" [ref=e118] [cursor=pointer]:
+            - /url: https://messenger.freeappstore.online
+          - text: About →
+        - link "🎸 Bandmates Social Discover bands, browse musician profiles, and find people to play with in your area." [ref=e119] [cursor=pointer]:
+          - /url: /apps/bandmates.html
+          - generic [ref=e120]:
+            - generic [ref=e121]: 🎸
+            - generic [ref=e122]:
+              - heading "Bandmates" [level=3] [ref=e123]
+              - generic [ref=e124]: Social
+          - paragraph [ref=e125]: Discover bands, browse musician profiles, and find people to play with in your area.
+        - generic [ref=e126]:
+          - link [ref=e127] [cursor=pointer]:
+            - /url: /apps/bandmates.html
+          - link "Open" [ref=e128] [cursor=pointer]:
+            - /url: https://bandmates.freeappstore.online
+          - text: About →
+        - link "📅 Meetup Social Browse local events, RSVP, and discover communities. Find things to do with people near you." [ref=e129] [cursor=pointer]:
+          - /url: /apps/meetup.html
+          - generic [ref=e130]:
+            - generic [ref=e131]: 📅
+            - generic [ref=e132]:
+              - heading "Meetup" [level=3] [ref=e133]
+              - generic [ref=e134]: Social
+          - paragraph [ref=e135]: Browse local events, RSVP, and discover communities. Find things to do with people near you.
+        - generic [ref=e136]:
+          - link [ref=e137] [cursor=pointer]:
+            - /url: /apps/meetup.html
+          - link "Open" [ref=e138] [cursor=pointer]:
+            - /url: https://meetup.freeappstore.online
+          - text: About →
+  - contentinfo [ref=e139]:
+    - generic [ref=e140]:
+      - generic [ref=e141]:
+        - link "FreeAppStore" [ref=e142] [cursor=pointer]:
+          - /url: /
+        - paragraph [ref=e143]: Free forever, open source, privacy-first.
+      - generic [ref=e144]:
+        - link "About" [ref=e145] [cursor=pointer]:
+          - /url: /about.html
+        - link "Contribute" [ref=e146] [cursor=pointer]:
+          - /url: /contribute.html
+        - link "Guidelines" [ref=e147] [cursor=pointer]:
+          - /url: /guidelines.html
+        - link "Privacy" [ref=e148] [cursor=pointer]:
+          - /url: /privacy.html
+        - link "Terms" [ref=e149] [cursor=pointer]:
+          - /url: /terms.html
+        - link "GitHub" [ref=e150] [cursor=pointer]:
+          - /url: https://github.com/freeappstore-online
+        - link "Pro" [ref=e151] [cursor=pointer]:
+          - /url: https://proappstore.online
