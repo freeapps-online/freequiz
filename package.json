@@ -11,9 +11,14 @@
     "build": "pnpm --filter @freequizapp/web build",
     "preview": "pnpm --filter @freequizapp/web preview",
     "cf:deploy": "pnpm build && wrangler pages deploy web/dist",
-    "cf:preview": "pnpm build && wrangler pages deploy web/dist --branch preview"
+    "cf:preview": "pnpm build && wrangler pages deploy web/dist --branch preview",
+    "test": "pnpm --filter @quiz/web exec tsc -b"
   },
   "devDependencies": {
     "wrangler": "^4.87.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freeappstore-online/quiz.git"
   }
 }
